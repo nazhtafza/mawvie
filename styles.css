@@ -1,0 +1,1258 @@
+/* ==========================================================================
+   LAUT BERCERITA - MOBILE-FIRST THEATER STAGE EXPERIENCE
+   Curtain Opening Animation & Interactive Invitation
+   ========================================================================== */
+
+:root {
+  /* Warm Theatrical Stage Palette */
+  --stage-dark-bg: #140b09;
+  --stage-vignette: #090403;
+  --stage-warm-glow: rgba(225, 150, 75, 0.22);
+  --curtain-red: #8f0d23;
+  --curtain-valance-dark: #660515;
+
+  /* Typography Colors */
+  --text-ivory: #fff4e5;
+  --text-champagne: #faedd9;
+  --text-gold: #f4b436;
+  --text-muted: #a38c82;
+  --text-ticket-dark: #2a1a17;
+  --text-ticket-sub: #452e2a;
+
+  /* Gold Gradients */
+  --gold-btn-grad: linear-gradient(135deg, #f3b235 0%, #de8d0e 50%, #ba6d03 100%);
+  --gold-btn-shadow: 0 6px 25px rgba(243, 178, 53, 0.45);
+  --no-btn-grad: linear-gradient(135deg, #7a501c 0%, #52340e 100%);
+  --no-btn-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+
+  /* Ticket Colors */
+  --ticket-paper: #f6eedb;
+  --ticket-paper-shadow: 0 14px 40px rgba(0, 0, 0, 0.7);
+  --ticket-border: #cfbea5;
+  --ticket-dash: #b8a287;
+
+  /* Fonts */
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Cinzel', serif;
+  --font-mono: 'Space Mono', monospace;
+
+  /* Dimensions */
+  --mobile-max-width: 430px;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  font-size: 16px;
+  background-color: #080404;
+  color: var(--text-ivory);
+  font-family: var(--font-sans);
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+  overflow-y: auto;
+  min-height: 100%;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+}
+
+body {
+  min-height: 100%;
+  min-height: 100dvh;
+  position: relative;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background: radial-gradient(circle at 50% 15%, #1f0f0c 0%, #080404 85%);
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Confetti Canvas */
+#confettiCanvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 999;
+}
+
+/* ==========================================================================
+   OUTER BACKDROP & MOBILE-FIRST CONTAINER
+   ========================================================================== */
+
+.theater-outer-wrapper {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  background: 
+    radial-gradient(circle at 50% 30%, rgba(200, 110, 50, 0.08) 0%, transparent 60%),
+    #070404;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* On Desktop: Sleek centered phone viewport. On Mobile: Native 100% full screen */
+.mobile-app-container {
+  width: 100%;
+  max-width: var(--mobile-max-width);
+  min-height: 100vh;
+  min-height: 100dvh;
+  position: relative;
+  background: 
+    radial-gradient(ellipse at 50% 18%, rgba(200, 120, 60, 0.16) 0%, transparent 65%),
+    linear-gradient(180deg, #1e100d 0%, #160c0a 35%, #100706 70%, #0d0504 100%);
+  box-shadow: 
+    0 0 60px rgba(0, 0, 0, 0.95),
+    0 0 30px rgba(220, 120, 40, 0.08);
+  overflow-x: hidden;
+  overflow-y: visible;
+  display: flex;
+  flex-direction: column;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (min-width: 480px) {
+  .theater-outer-wrapper {
+    padding: 1.5rem 0;
+  }
+  .mobile-app-container {
+    border-radius: 28px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    min-height: calc(100vh - 3rem);
+  }
+}
+
+
+
+/* ==========================================================================
+   1. THEATER CURTAIN OVERLAY (START CLOSED, OPENS LEFT & RIGHT)
+   ========================================================================== */
+
+.curtain-experience-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 50;
+  overflow: hidden;
+  background-color: #0e0605;
+  cursor: pointer;
+  transition: visibility 0s 1.8s, opacity 0.5s 1.5s;
+}
+
+/* Top Valance Arch */
+.curtain-top-valance {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 20;
+  pointer-events: none;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.7));
+}
+.curtain-top-valance .valance-img {
+  width: 100%;
+  display: block;
+  height: auto;
+}
+
+/* Curtain Panels (Left & Right) */
+.curtain-curtain-panel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  height: 100%;
+  width: 52%;
+  z-index: 10;
+  overflow: hidden;
+  will-change: transform;
+}
+
+.curtain-panel-left {
+  left: 0;
+  transform-origin: left top;
+  box-shadow: 12px 0 30px rgba(0, 0, 0, 0.7);
+  transition: transform 1.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.curtain-panel-right {
+  right: 0;
+  transform-origin: right top;
+  box-shadow: -12px 0 30px rgba(0, 0, 0, 0.7);
+  transition: transform 1.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.curtain-panel-img {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  display: block;
+}
+
+/* Bottom Wood Floor on Curtain */
+.curtain-bottom-floor {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 15;
+  pointer-events: none;
+  transition: transform 1.5s ease-out, opacity 1.2s ease-out;
+}
+.curtain-bottom-floor .floor-img {
+  width: 100%;
+  display: block;
+  height: 55px;
+  object-fit: cover;
+}
+
+/* ==========================================================================
+   CURTAIN OPENED STATE (Animated Left and Right)
+   ========================================================================== */
+
+.curtain-experience-overlay.curtain-opened {
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.curtain-experience-overlay.curtain-opened .curtain-panel-left {
+  transform: translateX(-102%) scaleX(0.25);
+}
+
+.curtain-experience-overlay.curtain-opened .curtain-panel-right {
+  transform: translateX(102%) scaleX(0.25);
+}
+
+.curtain-experience-overlay.curtain-opened .curtain-bottom-floor {
+  transform: translateY(40px);
+  opacity: 0;
+}
+
+/* ==========================================================================
+   2. STAGE DETAIL PAGE (Background is a Theater Stage)
+   ========================================================================== */
+
+.stage-page-content {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 2.5rem;
+  z-index: 10;
+}
+
+/* Stage Spotlight Halo radiating from above */
+.stage-spotlight-halo {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 380px;
+  height: 380px;
+  background: radial-gradient(circle, rgba(235, 160, 85, 0.22) 0%, rgba(180, 90, 40, 0.08) 50%, transparent 75%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ==========================================================================
+   HERO SECTION: HEADER TITLE & ZOOM-IN POSTER
+   ========================================================================== */
+
+.stage-hero-section {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2.8rem 1.4rem 0 1.4rem;
+  text-align: center;
+  z-index: 2;
+}
+
+/* Header Quote Title */
+.hero-quote-title {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 1.32rem;
+  line-height: 1.45;
+  color: var(--text-champagne);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8), 0 0 20px rgba(243, 178, 53, 0.2);
+  margin-bottom: 1.6rem;
+  max-width: 320px;
+  opacity: 0;
+  transform: translateY(-16px);
+  transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Poster Container with Dramatic Zoom In */
+.hero-poster-wrapper {
+  position: relative;
+  width: 185px;
+  border-radius: 6px;
+  overflow: visible;
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  transform: scale(0.65) translateY(20px);
+  filter: blur(5px);
+  transition: 
+    opacity 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.15s,
+    transform 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.15s,
+    filter 1.2s ease-out 0.15s;
+}
+
+.poster-spotlight-beam {
+  position: absolute;
+  inset: -15px;
+  background: radial-gradient(circle, rgba(243, 178, 53, 0.28) 0%, rgba(200, 100, 40, 0.1) 60%, transparent 80%);
+  border-radius: 14px;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hero-poster-img {
+  position: relative;
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 4px;
+  box-shadow: 
+    0 15px 35px rgba(0, 0, 0, 0.9),
+    0 0 20px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  z-index: 1;
+}
+
+/* Hero Action Button: See the Detail */
+.hero-action-box {
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1) 0.4s, transform 1s cubic-bezier(0.16, 1, 0.3, 1) 0.4s;
+  z-index: 5;
+}
+
+.btn-see-detail {
+  background: var(--gold-btn-grad);
+  border: 1px solid rgba(255, 240, 200, 0.4);
+  color: #fff;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.65rem 2rem;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: var(--gold-btn-shadow);
+  transition: all 0.3s ease;
+  display: inline-block;
+  text-decoration: none;
+}
+
+.btn-see-detail:hover, .btn-see-detail:active {
+  transform: scale(1.05);
+  box-shadow: 0 8px 30px rgba(243, 178, 53, 0.6);
+}
+
+/* ==========================================================================
+   STAGE CONTENT ACTIVATED (When curtain is opened)
+   ========================================================================== */
+
+.stage-active .hero-quote-title {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.stage-active .hero-poster-wrapper {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  filter: blur(0);
+}
+
+.stage-active .hero-action-box {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ==========================================================================
+   STAGE FLOOR & PHOTOSTRIP JUNCTION
+   Photostrip sits right between the wood floor background and the plain background
+   ========================================================================== */
+
+.stage-floor-junction-area {
+  position: relative;
+  width: 100%;
+  margin-top: 0;
+  margin-bottom: 2.2rem;
+}
+
+.stage-floor-wood-band {
+  width: 100%;
+  height: 95px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 8px 16px rgba(0, 0, 0, 0.85);
+}
+
+.stage-floor-wood-band .perspective-floor-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Photostrip bridges between the wood floor above and the plain background below, extending edge-to-edge */
+.photostrip-bridge-container {
+  width: 100%;
+  padding: 0;
+  margin-top: -46px; /* Sits right on the boundary between floor and plain background */
+  position: relative;
+  z-index: 5;
+  display: flex;
+  justify-content: center;
+}
+
+.photostrip-frame {
+  width: 100%;
+  max-width: 100%;
+  border-radius: 0;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  border-left: none;
+  border-right: none;
+  transition: transform 0.3s ease;
+}
+
+.photostrip-frame:hover {
+  transform: scale(1.01);
+}
+
+.photostrip-img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ==========================================================================
+   INVITATION DETAILS & VINTAGE MOVIE TICKET
+   ========================================================================== */
+
+.stage-details-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 1.4rem;
+  margin-bottom: 2.2rem;
+}
+
+/* Film Reel Icon */
+.film-icon-badge {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.6rem;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.7));
+}
+
+.film-svg-icon {
+  width: 100%;
+  height: 100%;
+}
+
+.invitation-heading {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 1.35rem;
+  color: var(--text-ivory);
+  margin-bottom: 1.4rem;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+}
+
+/* VINTAGE PERFORATED MOVIE TICKET */
+.vintage-movie-ticket {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  background-color: var(--ticket-paper);
+  background-image: radial-gradient(circle at 50% 50%, #faf3e5 0%, #f4e9d3 100%);
+  border-radius: 18px;
+  box-shadow: var(--ticket-paper-shadow);
+  padding: 1.5rem 1.4rem 1.4rem 1.4rem;
+  color: var(--text-ticket-dark);
+  overflow: visible;
+}
+
+/* Top Cutout Notch */
+.ticket-cutout-top {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 28px;
+  height: 28px;
+  background-color: #170d0b;
+  border-radius: 50%;
+  box-shadow: inset 0 -3px 5px rgba(0, 0, 0, 0.6);
+  z-index: 5;
+}
+
+/* Bottom Cutout Notch */
+.ticket-cutout-bottom {
+  position: absolute;
+  bottom: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 28px;
+  height: 28px;
+  background-color: #110706;
+  border-radius: 50%;
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.6);
+  z-index: 5;
+}
+
+/* Side Perforation Notches */
+.ticket-notch-left {
+  position: absolute;
+  left: -12px;
+  bottom: 84px;
+  width: 24px;
+  height: 24px;
+  background-color: #160c0a;
+  border-radius: 50%;
+  box-shadow: inset -2px 0 4px rgba(0, 0, 0, 0.5);
+  z-index: 5;
+}
+
+.ticket-notch-right {
+  position: absolute;
+  right: -12px;
+  bottom: 84px;
+  width: 24px;
+  height: 24px;
+  background-color: #160c0a;
+  border-radius: 50%;
+  box-shadow: inset 2px 0 4px rgba(0, 0, 0, 0.5);
+  z-index: 5;
+}
+
+/* Ticket Inner Card Framing */
+.ticket-inner-card {
+  position: relative;
+  border: 1px solid var(--ticket-border);
+  border-radius: 10px;
+  padding: 1rem 0.9rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Header row with Popcorn, Title, Camera */
+.ticket-header-row {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.9rem;
+}
+
+.ticket-stamp-icon {
+  font-size: 1.4rem;
+  opacity: 0.85;
+}
+
+.ticket-film-title {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--text-ticket-dark);
+  letter-spacing: 0.2px;
+}
+
+/* Poster Thumbnail inside Ticket */
+.ticket-poster-box {
+  width: 95px;
+  margin-bottom: 1.1rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.ticket-poster-thumb {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Meta Data: Location & Time */
+.ticket-meta-block {
+  margin-bottom: 0.9rem;
+  width: 100%;
+}
+
+.ticket-meta-label {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 0.98rem;
+  color: var(--text-ticket-dark);
+  margin-bottom: 0.2rem;
+}
+
+.ticket-meta-value {
+  font-family: var(--font-sans);
+  font-size: 0.84rem;
+  line-height: 1.4;
+  color: var(--text-ticket-sub);
+  font-weight: 500;
+}
+
+/* Perforation Divider */
+.ticket-perforated-divide {
+  width: 100%;
+  margin: 0.6rem 0 0.85rem 0;
+  position: relative;
+}
+
+.perforation-dash-line {
+  width: 100%;
+  border-top: 1.5px dashed var(--ticket-dash);
+}
+
+/* Barcode */
+.ticket-barcode-wrap {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.barcode-graphic {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2.2px;
+  height: 38px;
+}
+
+.barcode-graphic span {
+  background-color: #241614;
+  height: 100%;
+  display: inline-block;
+  width: 2px;
+}
+.barcode-graphic span:nth-child(2n) { width: 3.5px; }
+.barcode-graphic span:nth-child(3n) { width: 1.5px; }
+.barcode-graphic span:nth-child(5n) { width: 4.5px; }
+.barcode-graphic span:nth-child(7n) { width: 2px; }
+
+.barcode-serial {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #382420;
+}
+
+/* ==========================================================================
+   RSVP DECISION SECTION ('So, does my just a friend accept...')
+   ========================================================================== */
+
+.stage-rsvp-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0 1.6rem;
+  margin-bottom: 2.5rem;
+}
+
+.rsvp-prompt-text {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 1.15rem;
+  line-height: 1.45;
+  color: var(--text-champagne);
+  margin-bottom: 1.35rem;
+  max-width: 310px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+}
+
+.rsvp-buttons-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.2rem;
+  position: relative;
+  min-height: 48px;
+}
+
+.btn-choice {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 1.05rem;
+  padding: 0.65rem 2.2rem;
+  border-radius: 999px;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.25s ease;
+  user-select: none;
+}
+
+/* YES Button */
+.btn-choice-yes {
+  background: var(--gold-btn-grad);
+  color: #fff;
+  box-shadow: var(--gold-btn-shadow);
+  border: 1px solid rgba(255, 240, 200, 0.4);
+}
+
+.btn-choice-yes:hover, .btn-choice-yes:active {
+  transform: scale(1.08);
+  box-shadow: 0 8px 30px rgba(243, 178, 53, 0.7);
+}
+
+/* NO Button (Playful Dodge) */
+.btn-choice-no {
+  background: var(--no-btn-grad);
+  color: #d1b896;
+  box-shadow: var(--no-btn-shadow);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  position: relative;
+  will-change: transform;
+}
+
+.btn-choice-no:hover, .btn-choice-no:active {
+  background: linear-gradient(135deg, #664115 0%, #402607 100%);
+  color: #ecd9bd;
+}
+
+/* ==========================================================================
+   PAGE FOOTER
+   ========================================================================== */
+
+.stage-page-footer {
+  width: 100%;
+  text-align: center;
+  padding: 1rem 1rem 1.5rem 1rem;
+}
+
+.footer-credit {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-weight: 400;
+  letter-spacing: 0.3px;
+}
+
+/* ==========================================================================
+   THANK YOU PAGE (When 'Yes' button is clicked)
+   ========================================================================== */
+
+.thank-you-page-view {
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: 
+    radial-gradient(ellipse at 50% 25%, rgba(190, 105, 55, 0.18) 0%, transparent 65%),
+    linear-gradient(180deg, #1c0e0b 0%, #140807 40%, #0d0403 100%);
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 100;
+  animation: fadeInPage 0.35s ease-out forwards;
+}
+
+.thank-you-page-view.active {
+  display: flex !important;
+}
+
+@keyframes fadeInPage {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.thank-you-content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 4.5rem 1.4rem 2rem 1.4rem;
+  flex: 1;
+  justify-content: center;
+}
+
+.thank-you-title {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 1.65rem;
+  color: #fff;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.8), 0 0 25px rgba(243, 178, 53, 0.25);
+  margin-bottom: 2.2rem;
+}
+
+.thank-you-cat-frame {
+  width: 100%;
+  max-width: 295px;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 3rem;
+}
+
+.thank-you-cat-img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.thank-you-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+  width: 100%;
+}
+
+.btn-thank-you-back {
+  background: var(--gold-btn-grad);
+  border: 1px solid rgba(255, 240, 200, 0.4);
+  color: #fff;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 1.05rem;
+  padding: 0.65rem 2.8rem;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: var(--gold-btn-shadow);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.btn-thank-you-back:hover, .btn-thank-you-back:active {
+  transform: scale(1.05);
+  box-shadow: 0 8px 30px rgba(243, 178, 53, 0.6);
+}
+
+.thank-you-wa-link {
+  font-size: 0.82rem;
+  color: #25d366;
+  text-decoration: none;
+  font-weight: 600;
+  opacity: 0.9;
+  transition: opacity 0.2s ease;
+  display: inline-block;
+  padding: 0.3rem 0.6rem;
+}
+
+.thank-you-wa-link:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+/* Stage floor at the bottom of the Thank You page */
+.thank-you-stage-floor {
+  width: 100%;
+  height: 75px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 8px 15px rgba(0, 0, 0, 0.85);
+}
+
+.thank-you-floor-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ==========================================================================
+   MODAL BOTTOM SHEET (Celebration & Settings)
+   ========================================================================== */
+
+.mobile-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.mobile-modal-backdrop.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.mobile-modal-sheet {
+  width: 100%;
+  max-width: var(--mobile-max-width);
+  background: #190e0b;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  border-top: 1px solid rgba(243, 178, 53, 0.35);
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.9);
+  padding: 1.8rem 1.4rem 2rem 1.4rem;
+  position: relative;
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.mobile-modal-backdrop.show .mobile-modal-sheet {
+  transform: translateY(0);
+}
+
+.modal-close-icon {
+  position: absolute;
+  top: 1rem;
+  right: 1.2rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  color: var(--text-champagne);
+  font-size: 1.4rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* Celebration Content */
+.modal-celebrate-header {
+  text-align: center;
+  margin-bottom: 1.3rem;
+}
+
+.celebrate-emoji-bounce {
+  font-size: 2.6rem;
+  margin-bottom: 0.5rem;
+  animation: bounceEmoji 1s infinite alternate ease-in-out;
+}
+
+@keyframes bounceEmoji {
+  0% { transform: scale(0.9); }
+  100% { transform: scale(1.1); }
+}
+
+.celebrate-title {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  color: var(--text-gold);
+  margin-bottom: 0.4rem;
+}
+
+.celebrate-subtitle {
+  font-size: 0.88rem;
+  color: var(--text-champagne);
+  line-height: 1.45;
+}
+
+.celebrate-ticket-recap {
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(243, 178, 53, 0.25);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.recap-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.84rem;
+}
+
+.recap-label {
+  color: var(--text-muted);
+}
+.recap-val {
+  color: var(--text-ivory);
+  font-weight: 600;
+  text-align: right;
+}
+
+.btn-confirm-wa {
+  display: block;
+  width: 100%;
+  background: #25d366;
+  color: #fff;
+  text-align: center;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 0.85rem;
+  border-radius: 999px;
+  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.35);
+  margin-bottom: 0.75rem;
+  transition: transform 0.2s ease;
+}
+
+.btn-confirm-wa:hover, .btn-confirm-wa:active {
+  transform: scale(1.02);
+}
+
+.btn-modal-back {
+  width: 100%;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  padding: 0.65rem;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+/* Settings Form Styles */
+.settings-modal-title {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  color: var(--text-gold);
+  margin-bottom: 0.3rem;
+}
+
+.settings-modal-desc {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-bottom: 1.2rem;
+}
+
+.settings-form-group {
+  margin-bottom: 1rem;
+}
+
+.settings-form-group label {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--text-champagne);
+  margin-bottom: 0.35rem;
+}
+
+.settings-input, .settings-textarea {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  padding: 0.65rem 0.85rem;
+  color: #fff;
+  font-size: 0.85rem;
+  font-family: var(--font-sans);
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.settings-input:focus, .settings-textarea:focus {
+  border-color: var(--text-gold);
+}
+
+.btn-save-settings {
+  width: 100%;
+  background: var(--gold-btn-grad);
+  border: none;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.92rem;
+  padding: 0.8rem;
+  border-radius: 999px;
+  cursor: pointer;
+  margin-top: 0.6rem;
+  box-shadow: var(--gold-btn-shadow);
+}
+
+.share-link-row {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+}
+
+.share-url-input {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  width: 100%;
+  outline: none;
+}
+
+.btn-copy-link {
+  background: rgba(243, 178, 53, 0.3);
+  border: 1px solid var(--text-gold);
+  color: var(--text-gold);
+  font-weight: 700;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   3. THANK YOU PAGE (MATCHING EXACT USER MOCKUP)
+   ========================================================================== */
+
+.thank-you-page-view {
+  display: none;
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  background: 
+    radial-gradient(circle at 50% 25%, rgba(200, 110, 50, 0.12) 0%, transparent 65%),
+    linear-gradient(180deg, #1f110f 0%, #170d0b 50%, #100807 100%);
+  padding: 2.5rem 1.25rem 0;
+  box-sizing: border-box;
+  z-index: 20;
+  text-align: center;
+  overflow-x: hidden;
+  overflow-y: auto;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+}
+
+.thank-you-page-view.active {
+  display: flex !important;
+  animation: thankYouFadeIn 0.45s ease-out forwards;
+}
+
+@keyframes thankYouFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.thank-you-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  width: 100%;
+  max-width: 340px;
+  margin-bottom: 2rem;
+}
+
+.thank-you-title {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 2.15rem;
+  color: #fff4e6;
+  letter-spacing: 0.3px;
+  margin-bottom: 2.2rem;
+  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.85);
+}
+
+.thank-you-cat-frame {
+  width: 100%;
+  max-width: 300px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.85), 0 0 25px rgba(220, 120, 40, 0.18);
+  margin-bottom: 2.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.thank-you-cat-img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.thank-you-actions {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn-thank-you-back {
+  background: linear-gradient(135deg, #e59d28 0%, #c47b0e 60%, #9e5b02 100%);
+  color: #fff8f0;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 1.05rem;
+  padding: 0.72rem 3.4rem;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(229, 157, 40, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  letter-spacing: 0.3px;
+}
+
+.btn-thank-you-back:hover,
+.btn-thank-you-back:active {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(229, 157, 40, 0.6);
+}
+
+.thank-you-stage-floor {
+  width: 100%;
+  margin-top: auto;
+  line-height: 0;
+}
+
+.thank-you-floor-img {
+  width: 100%;
+  height: 65px;
+  object-fit: cover;
+  display: block;
+  box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.7);
+}
+
