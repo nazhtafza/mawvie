@@ -1,249 +1,323 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Mawvie</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎬</text></svg>">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>THANKS FOR LAST WEEKEND MAWLL 🤍</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤍</text></svg>">
+  <meta name="description" content="THANKS FOR LAST WEEKEND MAWLL 🤍 - Mawvie">
 
-  <!-- SEO & Social Meta -->
-  <meta name="description"
-    content="Let's escape to the movies together this weekend! Undangan spesial nonton film Laut Bercerita di bioskop NSC Jepara.">
-  <meta property="og:title" content="Mawvie">
-  <meta property="og:description" content="So, does my 'just a friend' accept my invitation? 😜">
-  <meta property="og:image" content="assets/poster.png">
-
-  <!-- Google Fonts: Playfair Display (Italic & Bold for exact match), Plus Jakarta Sans, Cinzel, Space Mono -->
+  <!-- Google Fonts for Theater Styling -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Cinzel:wght@600;700;800&family=Space+Mono:wght@400;700&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&family=Plus+Jakarta+Sans:wght@400;600&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="styles.css?v=6.0">
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* Fullscreen ASCII Canvas */
+    canvas#screen {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      cursor: pointer;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+
+    /* ====================================================================
+       THEATER CURTAIN OVERLAY (Start closed, opens left & right)
+       ==================================================================== */
+    .curtain-experience-overlay {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      z-index: 50;
+      overflow: hidden;
+      background-color: #0e0605;
+      cursor: pointer;
+      transition: visibility 0s 1.8s, opacity 0.5s 1.5s;
+    }
+
+    /* Top Valance Arch */
+    .curtain-top-valance {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      z-index: 20;
+      pointer-events: none;
+      filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.7));
+      transition: transform 1.5s ease-out, opacity 1.2s ease-out;
+    }
+    .curtain-top-valance .valance-img {
+      width: 100%;
+      display: block;
+      height: auto;
+      max-height: 130px;
+      object-fit: cover;
+    }
+
+    /* Left & Right Curtain Panels */
+    .curtain-curtain-panel {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      height: 100%;
+      width: 52%;
+      z-index: 10;
+      overflow: hidden;
+      will-change: transform;
+    }
+
+    .curtain-panel-left {
+      left: 0;
+      transform-origin: left top;
+      box-shadow: 12px 0 30px rgba(0, 0, 0, 0.75);
+      transition: transform 1.7s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .curtain-panel-right {
+      right: 0;
+      transform-origin: right top;
+      box-shadow: -12px 0 30px rgba(0, 0, 0, 0.75);
+      transition: transform 1.7s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .curtain-panel-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Bottom Wood Stage Floor */
+    .curtain-bottom-floor {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      z-index: 15;
+      pointer-events: none;
+      transition: transform 1.5s ease-out, opacity 1.2s ease-out;
+    }
+    .curtain-bottom-floor .floor-img {
+      width: 100%;
+      display: block;
+      height: 55px;
+      object-fit: cover;
+    }
+
+    /* CURTAIN OPENED STATE */
+    .curtain-experience-overlay.curtain-opened {
+      pointer-events: none;
+      opacity: 0;
+      visibility: hidden;
+    }
+    .curtain-experience-overlay.curtain-opened .curtain-panel-left {
+      transform: translateX(-102%) scaleX(0.25);
+    }
+    .curtain-experience-overlay.curtain-opened .curtain-panel-right {
+      transform: translateX(102%) scaleX(0.25);
+    }
+    .curtain-experience-overlay.curtain-opened .curtain-top-valance {
+      transform: translateY(-100%);
+      opacity: 0;
+    }
+    .curtain-experience-overlay.curtain-opened .curtain-bottom-floor {
+      transform: translateY(50px);
+      opacity: 0;
+    }
+
+    /* Floating Sound Control Button (Hidden during curtain, fades in after opening) */
+    .music-btn {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 99;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      outline: none;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.6s ease, transform 0.25s ease, background 0.25s ease;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+    }
+    .music-btn.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .music-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.08);
+      border-color: rgba(255, 255, 255, 0.45);
+    }
+    .music-btn:active {
+      transform: scale(0.95);
+    }
+    .music-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+  </style>
 </head>
-
 <body>
-  <!-- Background Audio: Bee Gees - How Deep Is Your Love (Autoplay, Loop, No UI Buttons) -->
+  <!-- Background Audio: Bee Gees - How Deep Is Your Love -->
   <audio id="bgMusic" src="assets/how_deep_is_your_love.mp3" preload="auto" loop playsinline></audio>
 
-  <!-- Confetti Canvas for Celebration -->
-  <canvas id="confettiCanvas"></canvas>
+  <!-- ====================================================================
+       THEATER CURTAIN OVERLAY (Start closed, opens left & right)
+       ==================================================================== -->
+  <div class="curtain-experience-overlay" id="curtainOverlay">
+    <!-- Top Proscenium Valance Arch -->
+    <div class="curtain-top-valance">
+      <img src="assets/curtain_valance.png" alt="Curtain Valance" class="valance-img">
+    </div>
 
-  <!-- Desktop Ambient Stage Background Wrapper -->
-  <div class="theater-outer-wrapper">
+    <!-- Left Velvet Curtain Panel -->
+    <div class="curtain-curtain-panel curtain-panel-left" id="curtainLeftPanel">
+      <img src="assets/curtain_left.png" alt="Tirai Kiri" class="curtain-panel-img">
+    </div>
 
-    <!-- Mobile-First Main Application Frame -->
-    <main class="mobile-app-container" id="mobileApp">
+    <!-- Right Velvet Curtain Panel -->
+    <div class="curtain-curtain-panel curtain-panel-right" id="curtainRightPanel">
+      <img src="assets/curtain_right.png" alt="Tirai Kanan" class="curtain-panel-img">
+    </div>
 
-      <!-- ====================================================================
-           1. THEATER CURTAIN OVERLAY (Initial state: Closed, opens left & right)
-           ==================================================================== -->
-      <div class="curtain-experience-overlay" id="curtainOverlay">
-        <!-- Top Proscenium Valance Arch -->
-        <div class="curtain-top-valance">
-          <img src="assets/curtain_valance.png" alt="Curtain Valance" class="valance-img">
-        </div>
-
-        <!-- Left Velvet Curtain Panel -->
-        <div class="curtain-curtain-panel curtain-panel-left" id="curtainLeftPanel">
-          <img src="assets/curtain_left.png" alt="Tirai Kiri" class="curtain-panel-img">
-        </div>
-
-        <!-- Right Velvet Curtain Panel -->
-        <div class="curtain-curtain-panel curtain-panel-right" id="curtainRightPanel">
-          <img src="assets/curtain_right.png" alt="Tirai Kanan" class="curtain-panel-img">
-        </div>
-
-        <!-- Bottom Stage Wood Floor of Curtain -->
-        <div class="curtain-bottom-floor">
-          <img src="assets/stage_wood_floor.png" alt="Stage Floor" class="floor-img">
-        </div>
-
-      </div>
-
-      <!-- ====================================================================
-           2. DETAIL PAGE (Revealed after curtain opening, stage background)
-           ==================================================================== -->
-      <div class="stage-page-content" id="stageContent">
-
-        <!-- Stage Spotlight Halo Glow -->
-        <div class="stage-spotlight-halo"></div>
-
-        <!-- HERO SECTION -->
-        <section class="stage-hero-section" id="heroSection">
-          <!-- Header Title -->
-          <h1 class="hero-quote-title" id="heroTitle">
-            Let's escape to the movies together this weekend!.
-          </h1>
-
-          <!-- Zoom-in Movie Poster -->
-          <div class="hero-poster-wrapper" id="heroPosterWrapper">
-            <div class="poster-spotlight-beam"></div>
-            <img src="assets/poster.png" alt="Poster Film Laut Bercerita" class="hero-poster-img" id="heroPosterImg">
-          </div>
-
-          <!-- See the Detail Action Button -->
-          <div class="hero-action-box">
-            <button class="btn-see-detail" id="btnSeeDetail" type="button">
-              See the Detail
-            </button>
-          </div>
-        </section>
-
-        <!-- STAGE FLOOR & PHOTOSTRIP JUNCTION -->
-        <!-- Photostrip situated on top of the boundary between the floor background and plain website background -->
-        <div class="stage-floor-junction-area" id="photostripSection">
-          <div class="stage-floor-wood-band">
-            <img src="assets/stage_wood_floor.png" alt="Stage Wood Floor" class="perspective-floor-img">
-          </div>
-          <div class="photostrip-bridge-container">
-            <div class="photostrip-frame">
-              <img src="assets/photostrip.png" alt="Photo Booth Strip - SnapPoint for Revenge" class="photostrip-img">
-            </div>
-          </div>
-        </div>
-
-        <!-- INVITATION DETAILS SECTION -->
-        <section class="stage-details-section" id="invitationDetailsSection">
-          <!-- Film Reel / Clapperboard Icon Badge -->
-          <div class="film-icon-badge" aria-hidden="true">
-            <svg class="film-svg-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="6" y="14" width="52" height="38" rx="8" fill="#1e222d" stroke="#525c74" stroke-width="2.5" />
-              <path d="M 6 22 L 58 22" stroke="#434d63" stroke-width="2" />
-              <!-- Film perforations top -->
-              <rect x="12" y="16" width="5" height="4" rx="1" fill="#fff" opacity="0.8" />
-              <rect x="23" y="16" width="5" height="4" rx="1" fill="#fff" opacity="0.8" />
-              <rect x="34" y="16" width="5" height="4" rx="1" fill="#fff" opacity="0.8" />
-              <rect x="45" y="16" width="5" height="4" rx="1" fill="#fff" opacity="0.8" />
-              <!-- Film perforations bottom -->
-              <rect x="12" y="44" width="5" height="4" rx="1" fill="#fff" opacity="0.8" />
-              <rect x="23" y="44" width="5" height="4" rx="1" fill="#fff" opacity="0.8" />
-              <rect x="34" y="44" width="5" height="4" rx="1" fill="#fff" opacity="0.8" />
-              <rect x="45" y="44" width="5" height="4" rx="1" fill="#fff" opacity="0.8" />
-              <!-- Red Play Button in Center -->
-              <polygon points="27,27 27,41 41,34" fill="#e63946" />
-            </svg>
-          </div>
-
-          <h2 class="invitation-heading">Invitation Details</h2>
-
-          <!-- VINTAGE PERFORATED MOVIE TICKET -->
-          <div class="vintage-movie-ticket" id="vintageTicket">
-            <!-- Cutout notches on top and bottom -->
-            <div class="ticket-cutout-top"></div>
-            <div class="ticket-cutout-bottom"></div>
-
-            <!-- Perforation side notches -->
-            <div class="ticket-notch-left"></div>
-            <div class="ticket-notch-right"></div>
-
-            <div class="ticket-inner-card">
-              <!-- Ticket Header Row -->
-              <div class="ticket-header-row">
-                <span class="ticket-stamp-icon" title="Popcorn">🍿</span>
-                <h3 class="ticket-film-title">Laut Bercerita</h3>
-                <span class="ticket-stamp-icon" title="Projector">🎥</span>
-              </div>
-
-              <!-- Ticket Poster Thumbnail -->
-              <div class="ticket-poster-box">
-                <img src="assets/poster.png" alt="Laut Bercerita Thumbnail" class="ticket-poster-thumb">
-              </div>
-
-              <!-- Ticket Meta Details -->
-              <div class="ticket-meta-block">
-                <div class="ticket-meta-label">Location:</div>
-                <div class="ticket-meta-value location-text" id="dispLocation">
-                  NSC Jepara<br>
-                  Jalan Veteran 14 59417 Kauman<br>
-                  Jawa Tengah
-                </div>
-              </div>
-
-              <div class="ticket-meta-block">
-                <div class="ticket-meta-label">Time:</div>
-                <div class="ticket-meta-value time-text" id="dispTime">
-                  Saturday, October 31 2026<br>
-                  10:00 AM
-                </div>
-              </div>
-
-              <!-- Dashed Perforation Line -->
-              <div class="ticket-perforated-divide">
-                <div class="perforation-dash-line"></div>
-              </div>
-
-              <!-- Barcode & Code Number -->
-              <div class="ticket-barcode-wrap">
-                <div class="barcode-graphic" aria-hidden="true">
-                  <span></span><span></span><span></span><span></span><span></span>
-                  <span></span><span></span><span></span><span></span><span></span>
-                  <span></span><span></span><span></span><span></span><span></span>
-                  <span></span><span></span><span></span><span></span><span></span>
-                  <span></span><span></span><span></span><span></span><span></span>
-                  <span></span><span></span><span></span><span></span><span></span>
-                  <span></span><span></span><span></span><span></span><span></span>
-                </div>
-                <div class="barcode-serial" id="dispBarcode">752341562</div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- RSVP DECISION QUESTION SECTION -->
-        <section class="stage-rsvp-section" id="rsvpSection">
-          <h3 class="rsvp-prompt-text" id="rsvpPromptText">
-            So, does my 'just a friend' accept my invitation? 😜
-          </h3>
-
-          <div class="rsvp-buttons-row">
-            <button class="btn-choice btn-choice-yes" id="btnYes" type="button" onclick="showThankYouPage()">
-              Yes
-            </button>
-            <button class="btn-choice btn-choice-no" id="btnNo" type="button">
-              No
-            </button>
-          </div>
-        </section>
-
-        <!-- FOOTER -->
-        <footer class="stage-page-footer">
-          <p class="footer-credit" id="footerCredit">
-            Made with 🤍 Mawl's Just Friend
-          </p>
-        </footer>
-
-      </div>
-
-      <!-- ====================================================================
-           3. THANK YOU PAGE (Displayed when 'Yes' is clicked)
-           ==================================================================== -->
-      <section class="thank-you-page-view" id="thankYouPage" aria-hidden="true" style="display: none;">
-        <div class="thank-you-content">
-          <h2 class="thank-you-title" id="thankYouTitle">Thank You Mawl!</h2>
-
-          <div class="thank-you-cat-frame">
-            <img src="assets/cat_for_you.png" alt="Cat holding flowers - THIS IS FOR YOU" class="thank-you-cat-img">
-          </div>
-
-          <div class="thank-you-actions">
-            <button class="btn-thank-you-back" id="btnThankYouBack" type="button" onclick="hideThankYouPage()">
-              Back
-            </button>
-          </div>
-        </div>
-
-        <!-- Bottom Stage Wood Floor -->
-        <div class="thank-you-stage-floor">
-          <img src="assets/stage_wood_floor.png" alt="Stage Wood Floor" class="thank-you-floor-img">
-        </div>
-      </section>
-    </main>
+    <!-- Bottom Stage Wood Floor of Curtain -->
+    <div class="curtain-bottom-floor">
+      <img src="assets/stage_wood_floor.png" alt="Stage Floor" class="floor-img">
+    </div>
   </div>
 
-  <script src="app.js?v=6.0"></script>
-</body>
+  <!-- ASCII Canvas (Stage Content behind Curtain) -->
+  <canvas id="screen"></canvas>
 
+  <!-- Floating Audio Toggle -->
+  <button class="music-btn" id="musicToggle" type="button" aria-label="Toggle background music" title="Play / Pause Music">
+    <svg id="iconMuted" viewBox="0 0 24 24">
+      <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+    </svg>
+    <svg id="iconPlaying" viewBox="0 0 24 24" style="display: none;">
+      <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+    </svg>
+  </button>
+
+  <script src="bouquet.js"></script>
+  <script>
+    (() => {
+      const audio = document.getElementById('bgMusic');
+      const btn = document.getElementById('musicToggle');
+      const iconMuted = document.getElementById('iconMuted');
+      const iconPlaying = document.getElementById('iconPlaying');
+      const curtainOverlay = document.getElementById('curtainOverlay');
+      let curtainOpened = false;
+
+      function updateUI(playing) {
+        if (playing) {
+          iconMuted.style.display = 'none';
+          iconPlaying.style.display = 'block';
+          btn.style.background = 'rgba(255, 255, 255, 0.25)';
+        } else {
+          iconMuted.style.display = 'block';
+          iconPlaying.style.display = 'none';
+          btn.style.background = 'rgba(255, 255, 255, 0.1)';
+        }
+      }
+
+      function togglePlay() {
+        if (!audio) return;
+        if (audio.paused) {
+          audio.volume = 0.85;
+          audio.play().then(() => updateUI(true)).catch(e => console.log('Audio play error:', e));
+        } else {
+          audio.pause();
+          updateUI(false);
+        }
+      }
+
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        togglePlay();
+      });
+
+      // Curtain opening sequence:
+      function triggerCurtainOpening() {
+        if (curtainOpened) return;
+        curtainOpened = true;
+
+        if (curtainOverlay) {
+          curtainOverlay.classList.add('curtain-opened');
+          curtainOverlay.style.pointerEvents = 'none';
+          setTimeout(() => {
+            curtainOverlay.style.display = 'none';
+          }, 1800);
+        }
+
+        // Start background audio smoothly
+        if (audio && audio.paused) {
+          audio.volume = 0.85;
+          audio.play().then(() => updateUI(true)).catch(e => console.log('Audio autoplay prevented:', e));
+        }
+
+        // Fade in floating music button after curtain opening
+        setTimeout(() => {
+          if (btn) btn.classList.add('visible');
+        }, 1200);
+
+        // Start flower bloom as curtains part
+        setTimeout(() => {
+          if (typeof window.startBloom === 'function') {
+            window.startBloom();
+          }
+        }, 500);
+      }
+
+      // Tap on closed curtain to open immediately
+      if (curtainOverlay) {
+        curtainOverlay.addEventListener('click', triggerCurtainOpening);
+      }
+
+      // Auto-open smoothly after 1.2s if not tapped
+      const q = new URLSearchParams(window.location.search);
+      if (q.has('t')) {
+        // If testing with ?t=..., open immediately
+        triggerCurtainOpening();
+      } else {
+        setTimeout(() => {
+          if (!curtainOpened) {
+            triggerCurtainOpening();
+          }
+        }, 1200);
+      }
+    })();
+  </script>
+</body>
 </html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Mawvie</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎬</text></svg>">
+
+  <!-- SEO & Social Meta -->
+  <meta name="description"
+    content="Let's escape to the movies together this weekend! Undangan spesial nonton film Laut Bercerita di bioskop NSC Jepara.">
+  <meta property="og:title" content="Mawvie">
+  <meta property="og:description" content="So, does my 'just a friend' accept my invitation? 😜">
+  <meta property="og:image" content="assets/poster.png">
+
+  <!-- Google Fonts: Playfair Display (Italic & Bold for exact match), Plus Jakarta Sans, Cinzel, Space Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Cinzel:wght@600;700;800&family=Space+Mono:wght@400;700&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css?v=6.0">
+</head>
+
+<body>
+  <!-- Background Audio: Bee Gees - How Deep Is Your Love (Autoplay, Loop, No UI Buttons) -->
+  <audio id="bgMusic" src="assets/how_deep_is_your_love.mp3" preload="auto" loop playsinline></audio>
+
+  <!-- Confetti Canvas for Celebration -->
+  <canvas id="confettiCanvas"></canvas>
+
+  <!-- Desktop Ambient Stage Background Wrapper -->
+  <div class="theater-outer-wrapper">
+
+    <!-- Mobile-First Main Application Frame -->
+    <main class="mobile-app-container" id="mobileApp">
+
+      <!-- ====================================================================
+           1. THEATER CURTAIN OVERLAY (Initial state: Closed, opens left & right)
+           ==================================================================== -->
+      <div class="curtain-experience-overlay" id="curtainOverlay">
+        <!-- Top Proscenium Valance Arch -->
+        <div class="curtain-top-valance">
+          <img src="assets/curtain_valance.png" alt="Curtain Valance" class="valance-img">
+        </div>
+
+        <!-- Left Velvet Curtain Panel -->
+        <div class="curtain-curtain-panel curtain-panel-left" id="curtainLeftPanel">
+          <img src="assets/curtain_left.png" alt="Tirai Kiri" class="curtain-panel-img">
+        </div>
+
+        <!-- Right Velvet Curtain Panel -->
+        <div class="curtain-curtain-panel curtain-panel-right" id="curtainRightPanel">
+          <img src="assets/curtain_right.png" alt="Tirai Kanan" class="curtain-panel-img">
+        </div>
+
+        <!-- Bottom Stage Wood Floor of Curtain -->
+        <div class="curtain-bottom-floor">
+          <img src="assets/stage_wood_floor.png" alt="Stage Floor" class="floor-img">
+        </div>
+
+      </div>
+
+      <!-- ====================================================================
+           2. DETAIL PAGE (Revealed after curtain opening, stage background)
+           ==================================================================== -->
+      <div class="stage-page-content" id="stageContent">
+
+        <!-- Stage Spotlight Halo Glow -->
+        <div class="stage-spotlight-halo"></div>
+
+        <!-- HERO SECTION -->
+        <section class="stage-hero-section" id="heroSection">
+          <!-- Header Title -->
+          <h1 class="hero-quote-title" id="heroTitle">
+            Let's escape to the movies together this weekend!.
+          </h1>
+
+          <!-- Zoom-in Movie Poster -->
+          <div class="hero-poster-wrapper" id="heroPosterWrapper">
+            <div class="poster-spotlight-beam"></div>
+            <img src="assets/poster.png" alt="Poster Film Laut Bercerita" class="hero-poster-img" id="heroPosterImg">
+          </div>
+
+          <!-- See the Detail Action Button -->
+          <div class="hero-action-box">
+            <button class="btn-see-detail" id="btnSeeDetail" type="button">
+              See the Detail
+            </button>
+          </div>
+        </section>
+
+        <!-- STAGE FLOOR & PHOTOSTRIP JUNCTION -->
+        <!-- Photostrip situated on top of the boundary between the floor background and plain website background -->
+        <div class="stage-floor-junction-area" id="photostripSection">
+          <div class="stage-floor-wood-band">
+            <img src="assets/stage_wood_floor.png" alt="Stage Wood Floor" class="perspective-floor-img">
+          </div>
+          <div class="photostrip-bridge-container">
+            <div class="photostrip-frame">
+              <img src="assets/photostrip.png" alt="Photo Booth Strip - SnapPoint for Revenge" class="photostrip-img">
+            </div>
+          </div>
+        </div>
+
+        <!-- INVITATION DETAILS SECTION -->
+        <section class="stage-details-section" id="invitationDetailsSection">
+          <!-- Film Reel / Clapperboard Icon Badge -->
+          <div class="film-icon-badge" aria-hidden="true">
+            <svg class="film-svg-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="6" y="14" width="52" height="38" rx="8" fill="#1e222d" stroke="#525c74" stroke-width="2.5" />
+              <path d="M 6 22 L 58 22" stroke="#434d63" stroke-width="2" />
+              <!-- Film perforations top -->
+              <rect x="12" y="16" width="5" height="4" rx="1" fill="#fff" opacity="0.8" />
+              <rect x="23" y="16" width="5" height="4" rx="1" fill="#fff" opacity="0.8" />
+              <rect x="34" y="16" width="5" height="4" rx="1" fill="#fff" opacity="0.8" />
+              <rect x="45" y="16" width="5" height="4" rx="1" fill="#fff" opacity="0.8" />
+              <!-- Film perforations bottom -->
+              <rect x="12" y="44" width="5" height="4" rx="1" fill="#fff" opacity="0.8" />
+              <rect x="23" y="44" width="5" height="4" rx="1" fill="#fff" opacity="0.8" />
+              <rect x="34" y="44" width="5" height="4" rx="1" fill="#fff" opacity="0.8" />
+              <rect x="45" y="44" width="5" height="4" rx="1" fill="#fff" opacity="0.8" />
+              <!-- Red Play Button in Center -->
+              <polygon points="27,27 27,41 41,34" fill="#e63946" />
+            </svg>
+          </div>
+
+          <h2 class="invitation-heading">Invitation Details</h2>
+
+          <!-- VINTAGE PERFORATED MOVIE TICKET -->
+          <div class="vintage-movie-ticket" id="vintageTicket">
+            <!-- Cutout notches on top and bottom -->
+            <div class="ticket-cutout-top"></div>
+            <div class="ticket-cutout-bottom"></div>
+
+            <!-- Perforation side notches -->
+            <div class="ticket-notch-left"></div>
+            <div class="ticket-notch-right"></div>
+
+            <div class="ticket-inner-card">
+              <!-- Ticket Header Row -->
+              <div class="ticket-header-row">
+                <span class="ticket-stamp-icon" title="Popcorn">🍿</span>
+                <h3 class="ticket-film-title">Laut Bercerita</h3>
+                <span class="ticket-stamp-icon" title="Projector">🎥</span>
+              </div>
+
+              <!-- Ticket Poster Thumbnail -->
+              <div class="ticket-poster-box">
+                <img src="assets/poster.png" alt="Laut Bercerita Thumbnail" class="ticket-poster-thumb">
+              </div>
+
+              <!-- Ticket Meta Details -->
+              <div class="ticket-meta-block">
+                <div class="ticket-meta-label">Location:</div>
+                <div class="ticket-meta-value location-text" id="dispLocation">
+                  NSC Jepara<br>
+                  Jalan Veteran 14 59417 Kauman<br>
+                  Jawa Tengah
+                </div>
+              </div>
+
+              <div class="ticket-meta-block">
+                <div class="ticket-meta-label">Time:</div>
+                <div class="ticket-meta-value time-text" id="dispTime">
+                  Saturday, October 31 2026<br>
+                  10:00 AM
+                </div>
+              </div>
+
+              <!-- Dashed Perforation Line -->
+              <div class="ticket-perforated-divide">
+                <div class="perforation-dash-line"></div>
+              </div>
+
+              <!-- Barcode & Code Number -->
+              <div class="ticket-barcode-wrap">
+                <div class="barcode-graphic" aria-hidden="true">
+                  <span></span><span></span><span></span><span></span><span></span>
+                  <span></span><span></span><span></span><span></span><span></span>
+                  <span></span><span></span><span></span><span></span><span></span>
+                  <span></span><span></span><span></span><span></span><span></span>
+                  <span></span><span></span><span></span><span></span><span></span>
+                  <span></span><span></span><span></span><span></span><span></span>
+                  <span></span><span></span><span></span><span></span><span></span>
+                </div>
+                <div class="barcode-serial" id="dispBarcode">752341562</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- RSVP DECISION QUESTION SECTION -->
+        <section class="stage-rsvp-section" id="rsvpSection">
+          <h3 class="rsvp-prompt-text" id="rsvpPromptText">
+            So, does my 'just a friend' accept my invitation? 😜
+          </h3>
+
+          <div class="rsvp-buttons-row">
+            <button class="btn-choice btn-choice-yes" id="btnYes" type="button" onclick="showThankYouPage()">
+              Yes
+            </button>
+            <button class="btn-choice btn-choice-no" id="btnNo" type="button">
+              No
+            </button>
+          </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="stage-page-footer">
+          <p class="footer-credit" id="footerCredit">
+            Made with 🤍 Mawl's Just Friend
+          </p>
+        </footer>
+
+      </div>
+
+      <!-- ====================================================================
+           3. THANK YOU PAGE (Displayed when 'Yes' is clicked)
+           ==================================================================== -->
+      <section class="thank-you-page-view" id="thankYouPage" aria-hidden="true" style="display: none;">
+        <div class="thank-you-content">
+          <h2 class="thank-you-title" id="thankYouTitle">Thank You Mawl!</h2>
+
+          <div class="thank-you-cat-frame">
+            <img src="assets/cat_for_you.png" alt="Cat holding flowers - THIS IS FOR YOU" class="thank-you-cat-img">
+          </div>
+
+          <div class="thank-you-actions">
+            <button class="btn-thank-you-back" id="btnThankYouBack" type="button" onclick="hideThankYouPage()">
+              Back
+            </button>
+          </div>
+        </div>
+
+        <!-- Bottom Stage Wood Floor -->
+        <div class="thank-you-stage-floor">
+          <img src="assets/stage_wood_floor.png" alt="Stage Wood Floor" class="thank-you-floor-img">
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js?v=6.0"></script>
+</body>
+
+</html>
